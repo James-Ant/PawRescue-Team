@@ -1,0 +1,299 @@
+using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using PawRescue.Mobile.Models;
+using PawRescue.Mobile.Services;
+
+namespace PawRescue.Mobile.ViewModels;
+
+public partial class VolunteerDashboardViewModel : BaseViewModel
+{
+    private readonly IRescueApi _rescues;
+    private readonly ILocationService _location;
+
+    public VolunteerDashboardViewModel(IRescueApi rescues, ILocationService location, IDialogService dialogs) : base(dialogs)
+    {
+        _rescues = rescues;
+        _location = location;
+        Title = "Volunteer Dashboard";
+    }
+
+    public ObservableCollection<ReportSummaryDto> AvailableCases { get; } = new();
+    public ObservableCollection<AssignmentDto> MyActiveRescues { get; } = new();
+
+    [ObservableProperty] private int completedCount;
+    [ObservableProperty] private int activeCount;
+    [ObservableProperty] private int availableCount;
+    [ObservableProperty] private bool isRefreshing;
+    [ObservableProperty] private ReportSummaryDto? selectedCase;
+    [ObservableProperty] private AssignmentDto? selectedAssignment;
+
+    public override Task OnAppearingAsync() => LoadAsync();
+
+    [RelayCommand]
+    private async Task LoadAsync()
+    {
+        await RunAsync(async () =>
+        {
+            var here = await _location.GetCurrentAsync();
+            var available = await _rescues.GetAvailableAsync(here?.Latitude, here?.Longitude);
+            var mine = await _rescues.GetMineAsync(activeOnly: false);
+
+            AvailableCases.Clear();
+            foreach (var c in available) AvailableCases.Add(c);
+
+            MyActiveRescues.Clear();
+            foreach (var a in mine.Where(a => a.Status == AssignmentStatus.Active)) MyActiveRescues.Add(a);
+
+            AvailableCount = available.Count;
+            ActiveCount = MyActiveRescues.Count;
+            CompletedCount = mine.Count(a => a.Status == AssignmentStatus.Completed);
+        }, showBusy: !IsRefreshing);
+        IsRefreshing = false;
+    }
+
+    partial void OnSelectedCaseChanged(ReportSummaryDto? value)
+    {
+        if (value is null) return;
+        SelectedCase = null;
+        _ = Shell.Current.GoToAsync("reportdetails", new Dictionary<string, object> { ["id"] = value.Id });
+    }
+
+    partial void OnSelectedAssignmentChanged(AssignmentDto? value)
+    {
+        if (value is null) return;
+        SelectedAssignment = null;
+        _ = Shell.Current.GoToAsync("reportdetails", new Dictionary<string, object> { ["id"] = value.ReportId });
+    }
+}
+
+public partial class NotificationsViewModel : BaseViewModel
+{
+    private readonly INotificationApi _notifications;
+
+    public NotificationsViewModel(INotificationApi notifications, IDialogService dialogs) : base(dialogs)
+    {
+        _notifications = notifications;
+        Title = "Notifications";
+    }
+
+    public ObservableCollection<NotificationDto> Items { get; } = new();
+
+    [ObservableProperty] private bool isRefreshing;
+    [ObservableProperty] private bool isEmpty;
+    [ObservableProperty] private NotificationDto? selectedItem;
+
+    public override Task OnAppearingAsync() => LoadAsync();
+
+    // TODO(MEMBER 2): Load the notifications list.
+    //   Inside RunAsync(..., showBusy: !IsRefreshing):
+    //     var page = await _notifications.GetAsync();
+    //     Items.Clear(); add each page.Items; IsEmpty = Items.Count == 0;
+    //   After RunAsync set IsRefreshing = false (stops the pull-to-refresh spinner).
+    //   See VolunteerDashboardViewModel.LoadAsync for the same pattern.
+    [RelayCommand]
+    private Task LoadAsync()
+    {
+        IsEmpty = true;
+        IsRefreshing = false;
+        return Task.CompletedTask;
+    }
+
+    // TODO(MEMBER 2): Call _notifications.MarkAllAsReadAsync(), then replace every item
+    //   with a copy where IsRead = true (records: n with { IsRead = true }) so the dots disappear.
+    [RelayCommand]
+    private Task MarkAllReadAsync()
+        => Dialogs.AlertAsync("Not built yet", "Notifications are assigned to Member 2.");
+
+    partial void OnSelectedItemChanged(NotificationDto? value)
+    {
+        if (value is null) return;
+        SelectedItem = null;
+        _ = OpenAsync(value);
+    }
+
+    // TODO(MEMBER 2): When a notification is tapped:
+    //   1. If it's unread, call _notifications.MarkAsReadAsync(n.Id) and replace it in Items with n with { IsRead = true }.
+    //   2. If n.ReportId has a value, open it:
+    //      await Shell.Current.GoToAsync("reportdetails", new Dictionary<string, object> { ["id"] = reportId });
+    private Task OpenAsync(NotificationDto n) => Task.CompletedTask;
+}
+
+public partial class ProfileViewModel : BaseViewModel
+{
+    private readonly IUserApi _users;
+    private readonly IReportApi _reports;
+    private readonly IAuthApi _auth;
+    private readonly TokenStore _tokens;
+
+    public ProfileViewModel(IUserApi users, IReportApi reports, IAuthApi auth, TokenStore tokens, IDialogService dialogs) : base(dialogs)
+    {
+        _users = users;
+        _reports = reports;
+        _auth = auth;
+        _tokens = tokens;
+        Title = "My Profile";
+    }
+
+    public ObservableCollection<ReportSummaryDto> History { get; } = new();
+
+    [ObservableProperty] private ProfileDto? profile;
+    [ObservableProperty] private string initials = "?";
+    [ObservableProperty] private bool isEditing;
+    [ObservableProperty] private string editFullName = string.Empty;
+    [ObservableProperty] private string editPhone = string.Empty;
+    [ObservableProperty] private bool isVolunteer;
+    [ObservableProperty] private bool isAdmin;
+    [ObservableProperty] private ReportSummaryDto? selectedReport;
+
+    public override Task OnAppearingAsync() => LoadAsync();
+
+    [RelayCommand]
+    private Task LoadAsync() => RunAsync(async () =>
+    {
+        Profile = await _users.GetProfileAsync();
+        Initials = string.Concat(Profile.User.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => char.ToUpper(p[0])));
+        IsVolunteer = Profile.User.Role is Roles.Volunteer or Roles.Administrator;
+        IsAdmin = Profile.User.Role == Roles.Administrator;
+
+        History.Clear();
+        foreach (var r in await _reports.GetMineAsync()) History.Add(r);
+    });
+
+    [RelayCommand]
+    private void StartEdit()
+    {
+        if (Profile is null) return;
+        EditFullName = Profile.User.FullName;
+        EditPhone = Profile.User.PhoneNumber ?? string.Empty;
+        IsEditing = true;
+    }
+
+    [RelayCommand] private void CancelEdit() => IsEditing = false;
+
+    [RelayCommand]
+    private Task SaveAsync() => RunAsync(async () =>
+    {
+        if (string.IsNullOrWhiteSpace(EditFullName)) { await Dialogs.AlertAsync("Name required", "Please enter your name."); return; }
+        var user = await _users.UpdateProfileAsync(EditFullName.Trim(), string.IsNullOrWhiteSpace(EditPhone) ? null : EditPhone.Trim());
+        await _tokens.UpdateUserAsync(user);
+        IsEditing = false;
+        Profile = Profile! with { User = user };
+    });
+
+    partial void OnSelectedReportChanged(ReportSummaryDto? value)
+    {
+        if (value is null) return;
+        SelectedReport = null;
+        _ = Shell.Current.GoToAsync("reportdetails", new Dictionary<string, object> { ["id"] = value.Id });
+    }
+
+    [RelayCommand] private Task OpenVolunteerDashboardAsync() => Shell.Current.GoToAsync("volunteer");
+    [RelayCommand] private Task OpenAdminDashboardAsync() => Shell.Current.GoToAsync("admin");
+
+    [RelayCommand]
+    private async Task LogoutAsync()
+    {
+        if (!await Dialogs.ConfirmAsync("Log out?", "You'll need to sign in again.", "Log out")) return;
+        await _auth.LogoutAsync();
+        await Shell.Current.GoToAsync("//login");
+    }
+}
+
+public record StatusCount(string Name, int Count);
+
+public partial class AdminDashboardViewModel : BaseViewModel
+{
+    private readonly IAdminApi _admin;
+
+    public AdminDashboardViewModel(IAdminApi admin, IDialogService dialogs) : base(dialogs)
+    {
+        _admin = admin;
+        Title = "Admin Dashboard";
+    }
+
+    public string[] Tabs { get; } = new[] { "Overview", "Users", "Reports", "Activity" };
+
+    public ObservableCollection<UserDto> Users { get; } = new();
+    public ObservableCollection<ReportSummaryDto> Reports { get; } = new();
+    public ObservableCollection<AuditLogDto> Activity { get; } = new();
+    public ObservableCollection<StatusCount> StatusBreakdown { get; } = new();
+
+    [ObservableProperty] private DashboardStatsDto? stats;
+    [ObservableProperty] private string searchText = string.Empty;
+    [ObservableProperty] private UserDto? selectedUser;
+    [ObservableProperty] private ReportSummaryDto? selectedReport;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsOverview), nameof(IsUsers), nameof(IsReports), nameof(IsActivity))]
+    private string selectedTab = "Overview";
+
+    public bool IsOverview => SelectedTab == "Overview";
+    public bool IsUsers => SelectedTab == "Users";
+    public bool IsReports => SelectedTab == "Reports";
+    public bool IsActivity => SelectedTab == "Activity";
+
+    public override Task OnAppearingAsync() => LoadTabAsync();
+
+    partial void OnSelectedTabChanged(string value)
+    {
+        SearchText = string.Empty;
+        _ = LoadTabAsync();
+    }
+
+    [RelayCommand]
+    private Task LoadTabAsync() => RunAsync(async () =>
+    {
+        switch (SelectedTab)
+        {
+            case "Overview":
+                Stats = await _admin.GetStatsAsync();
+                StatusBreakdown.Clear();
+                foreach (var kv in Stats.ReportsByStatus) StatusBreakdown.Add(new StatusCount(System.Text.RegularExpressions.Regex.Replace(kv.Key, "(?<=[a-z])([A-Z])", " $1"), kv.Value));
+                break;
+            case "Users":
+                Fill(Users, (await _admin.GetUsersAsync(SearchText)).Items);
+                break;
+            case "Reports":
+                Fill(Reports, (await _admin.GetReportsAsync(SearchText)).Items);
+                break;
+            case "Activity":
+                Fill(Activity, (await _admin.GetActivityAsync()).Items);
+                break;
+        }
+    });
+
+    [RelayCommand] private Task SearchAsync() => LoadTabAsync();
+
+    partial void OnSelectedUserChanged(UserDto? value)
+    {
+        if (value is null) return;
+        SelectedUser = null;
+        _ = ManageUserAsync(value);
+    }
+
+    partial void OnSelectedReportChanged(ReportSummaryDto? value)
+    {
+        if (value is null) return;
+        SelectedReport = null;
+        _ = Shell.Current.GoToAsync("reportdetails", new Dictionary<string, object> { ["id"] = value.Id });
+    }
+
+    // ============================================================
+    // TODO(MEMBER 4): When an admin taps a user in the Users tab:
+    //   1. Show Dialogs.ActionSheetAsync($"{user.FullName} ({user.Role})",
+    //        user.IsActive ? "Deactivate account" : "Activate account",
+    //        "Make User", "Make Volunteer", "Make Administrator");
+    //   2. Depending on the choice call _admin.ChangeRoleAsync(user.Id, Roles.X)
+    //      or _admin.SetActiveAsync(user.Id, !user.IsActive) inside RunAsync(...).
+    //   3. Replace the old item in Users with the returned UserDto so the list updates.
+    // ============================================================
+    private Task ManageUserAsync(UserDto user)
+        => Dialogs.AlertAsync("Not built yet", "User management is assigned to Member 4.");
+
+    private static void Fill<T>(ObservableCollection<T> target, IEnumerable<T> items)
+    {
+        target.Clear();
+        foreach (var i in items) target.Add(i);
+    }
+}

@@ -1,0 +1,51 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PawRescue.Domain", "src\PawRescue.Domain\PawRescue.Domain.csproj", "{139B5976-F6DA-4958-B23D-5416FE0AB979}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PawRescue.Application", "src\PawRescue.Application\PawRescue.Application.csproj", "{5B659F95-D103-4554-87CB-65BD92F47F8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PawRescue.Infrastructure", "src\PawRescue.Infrastructure\PawRescue.Infrastructure.csproj", "{802FCCAD-E19E-43CB-BCC6-E7916C7C9217}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PawRescue.Api", "src\PawRescue.Api\PawRescue.Api.csproj", "{2F940D3D-D9BD-4984-B2A0-7C5EC976B251}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PawRescue.Mobile", "src\PawRescue.Mobile\PawRescue.Mobile.csproj", "{1140BF7C-6B5A-43D0-A987-31A1E76D1C2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PawRescue.Tests", "tests\PawRescue.Tests\PawRescue.Tests.csproj", "{E001AD01-8CE8-4173-85AA-DBF607C74E34}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{139B5976-F6DA-4958-B23D-5416FE0AB979}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{139B5976-F6DA-4958-B23D-5416FE0AB979}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{139B5976-F6DA-4958-B23D-5416FE0AB979}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{139B5976-F6DA-4958-B23D-5416FE0AB979}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B659F95-D103-4554-87CB-65BD92F47F8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B659F95-D103-4554-87CB-65BD92F47F8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B659F95-D103-4554-87CB-65BD92F47F8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B659F95-D103-4554-87CB-65BD92F47F8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{802FCCAD-E19E-43CB-BCC6-E7916C7C9217}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{802FCCAD-E19E-43CB-BCC6-E7916C7C9217}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{802FCCAD-E19E-43CB-BCC6-E7916C7C9217}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{802FCCAD-E19E-43CB-BCC6-E7916C7C9217}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F940D3D-D9BD-4984-B2A0-7C5EC976B251}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F940D3D-D9BD-4984-B2A0-7C5EC976B251}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F940D3D-D9BD-4984-B2A0-7C5EC976B251}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F940D3D-D9BD-4984-B2A0-7C5EC976B251}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1140BF7C-6B5A-43D0-A987-31A1E76D1C2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1140BF7C-6B5A-43D0-A987-31A1E76D1C2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1140BF7C-6B5A-43D0-A987-31A1E76D1C2A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1140BF7C-6B5A-43D0-A987-31A1E76D1C2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1140BF7C-6B5A-43D0-A987-31A1E76D1C2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1140BF7C-6B5A-43D0-A987-31A1E76D1C2A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{E001AD01-8CE8-4173-85AA-DBF607C74E34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E001AD01-8CE8-4173-85AA-DBF607C74E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E001AD01-8CE8-4173-85AA-DBF607C74E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E001AD01-8CE8-4173-85AA-DBF607C74E34}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

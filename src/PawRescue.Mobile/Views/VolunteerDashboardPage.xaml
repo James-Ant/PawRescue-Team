@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:PawRescue.Mobile.Views"
+                xmlns:vm="clr-namespace:PawRescue.Mobile.ViewModels"
+                xmlns:m="clr-namespace:PawRescue.Mobile.Models"
+                x:Class="PawRescue.Mobile.Views.VolunteerDashboardPage"
+                x:DataType="vm:VolunteerDashboardViewModel"
+                Title="{Binding Title}">
+
+    <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding LoadCommand}">
+        <CollectionView ItemsSource="{Binding AvailableCases}"
+                        ItemTemplate="{StaticResource ReportCardTemplate}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedCase}">
+            <CollectionView.Header>
+                <VerticalStackLayout Padding="16,8,16,0" Spacing="12">
+
+                    <!-- Stats -->
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                        <Border Style="{StaticResource StatCard}" BackgroundColor="{StaticResource PrimaryLight}">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <Label Text="{Binding ActiveCount}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PrimaryDark}" HorizontalOptions="Center" />
+                                <Label Text="Active" Style="{StaticResource Caption}" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Column="1" Style="{StaticResource StatCard}" BackgroundColor="{StaticResource SecondaryLight}">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <Label Text="{Binding CompletedCount}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource Secondary}" HorizontalOptions="Center" />
+                                <Label Text="Rescued" Style="{StaticResource Caption}" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Column="2" Style="{StaticResource StatCard}">
+                            <VerticalStackLayout HorizontalOptions="Center">
+                                <Label Text="{Binding AvailableCount}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+                                <Label Text="Waiting" Style="{StaticResource Caption}" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!-- My active rescues -->
+                    <Label Text="My active rescues" Style="{StaticResource SectionTitle}" />
+                    <Label Text="No active rescues. Pick a case below 👇" Style="{StaticResource Caption}" IsVisible="False">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding ActiveCount}" Value="0">
+                                <Setter Property="IsVisible" Value="True" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                    <CollectionView ItemsSource="{Binding MyActiveRescues}" SelectionMode="Single" SelectedItem="{Binding SelectedAssignment}"
+                                    HeightRequest="96" IsVisible="{Binding ActiveCount, Converter={StaticResource CountToBool}}">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="m:AssignmentDto">
+                                <Grid Style="{StaticResource NoSelectionHighlight}" Padding="0,4">
+                                    <Border Style="{StaticResource Card}" WidthRequest="240" BackgroundColor="{StaticResource Secondary}" Stroke="Transparent">
+                                        <VerticalStackLayout Spacing="4">
+                                            <Label Text="{Binding ReportTitle}" TextColor="White" FontAttributes="Bold" MaxLines="1" LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding AssignedAt, Converter={StaticResource UtcToLocal}, StringFormat='Accepted {0}'}" TextColor="#CCFBF1" FontSize="12" />
+                                            <Label Text="Tap to update progress →" TextColor="White" FontSize="12" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Label Text="Animals waiting for help" Style="{StaticResource SectionTitle}" />
+                    <Label Text="Sorted by urgency, then distance." Style="{StaticResource Caption}" />
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+                </VerticalStackLayout>
+            </CollectionView.Header>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout Padding="32" HorizontalOptions="Center">
+                    <Label Text="🎉" FontSize="44" HorizontalOptions="Center" />
+                    <Label Text="No open cases right now" Style="{StaticResource SectionTitle}" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+    </RefreshView>
+</views:BasePage>

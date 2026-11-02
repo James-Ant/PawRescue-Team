@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:PawRescue.Mobile.Views"
+                xmlns:vm="clr-namespace:PawRescue.Mobile.ViewModels"
+                xmlns:m="clr-namespace:PawRescue.Mobile.Models"
+                x:Class="PawRescue.Mobile.Views.ReportDetailsPage"
+                x:DataType="vm:ReportDetailsViewModel"
+                Title="{Binding Title}">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView>
+            <VerticalStackLayout Spacing="0" IsVisible="{Binding Report, Converter={StaticResource IsNotNull}}">
+
+                <!-- Photo carousel -->
+                <Grid HeightRequest="280">
+                    <CarouselView ItemsSource="{Binding Images}" IndicatorView="{x:Reference Dots}" Loop="False">
+                        <CarouselView.ItemTemplate>
+                            <DataTemplate x:DataType="m:ImageDto">
+                                <Image Source="{Binding Url}" Aspect="AspectFill" />
+                            </DataTemplate>
+                        </CarouselView.ItemTemplate>
+                    </CarouselView>
+                    <IndicatorView x:Name="Dots" VerticalOptions="End" HorizontalOptions="Center" Margin="0,0,0,12"
+                                   IndicatorColor="#80FFFFFF" SelectedIndicatorColor="White" />
+                </Grid>
+
+                <!-- Body card overlaps the photo slightly -->
+                <Border Style="{StaticResource Card}" Margin="12,-24,12,0" Padding="16">
+                    <VerticalStackLayout Spacing="10">
+                        <HorizontalStackLayout Spacing="6">
+                            <Border Style="{StaticResource Badge}" BackgroundColor="{Binding Report.Severity, Converter={StaticResource SeverityToColor}}">
+                                <Label Text="{Binding Report.Severity, StringFormat='{0} urgency'}" Style="{StaticResource BadgeText}" />
+                            </Border>
+                            <Border Style="{StaticResource Badge}" BackgroundColor="{Binding Report.Status, Converter={StaticResource StatusToColor}}">
+                                <Label Text="{Binding Report.Status, Converter={StaticResource EnumToText}}" Style="{StaticResource BadgeText}" />
+                            </Border>
+                        </HorizontalStackLayout>
+
+                        <Label Text="{Binding Report.Title}" Style="{StaticResource Title}" />
+
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                            <VerticalStackLayout>
+                                <Label Text="Animal" Style="{StaticResource Caption}" />
+                                <Label Text="{Binding Report.AnimalType}" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="Condition" Style="{StaticResource Caption}" />
+                                <Label Text="{Binding Report.Condition}" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="1">
+                                <Label Text="Reported by" Style="{StaticResource Caption}" />
+                                <Label Text="{Binding Report.ReporterName}" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                                <Label Text="Reported" Style="{StaticResource Caption}" />
+                                <Label Text="{Binding ReportedAgo}" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Label Text="Notes" Style="{StaticResource FieldLabel}" />
+                        <Label Text="{Binding Report.Description}" Style="{StaticResource Body}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Location -->
+                <Border Style="{StaticResource Card}" Margin="12,12,12,0">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Label Text="📍" FontSize="24" VerticalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="Location" FontAttributes="Bold" />
+                            <Label Text="{Binding Report.Location.Address, TargetNullValue='Pinned on map'}" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="2" Text="Directions" Style="{StaticResource SmallButton}" BackgroundColor="{StaticResource Secondary}"
+                                Command="{Binding OpenDirectionsCommand}" />
+                    </Grid>
+                </Border>
+
+                <!-- Rescuer -->
+                <Border Style="{StaticResource Card}" Margin="12,12,12,0"
+                        IsVisible="{Binding Report.ActiveAssignment, Converter={StaticResource IsNotNull}}">
+                    <HorizontalStackLayout Spacing="12">
+                        <Label Text="🦺" FontSize="24" VerticalOptions="Center" />
+                        <VerticalStackLayout>
+                            <Label Text="Assigned rescuer" Style="{StaticResource Caption}" />
+                            <Label Text="{Binding Report.ActiveAssignment.VolunteerName}" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Rescue progress timeline -->
+                <Label Text="Rescue progress" Style="{StaticResource SectionTitle}" Margin="16,16,16,4" />
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Timeline}" Margin="16,0" Spacing="0">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:TimelineStep">
+                            <Grid ColumnDefinitions="28,*" HeightRequest="44">
+                                <BoxView WidthRequest="2" Color="{Binding IsDone, Converter={StaticResource DoneToColor}}" HorizontalOptions="Center" />
+                                <Border WidthRequest="16" HeightRequest="16" StrokeShape="RoundRectangle 8" StrokeThickness="0"
+                                        BackgroundColor="{Binding IsDone, Converter={StaticResource DoneToColor}}"
+                                        HorizontalOptions="Center" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="{Binding Label}" VerticalOptions="Center" Margin="8,0,0,0">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsCurrent}" Value="True">
+                                            <Setter Property="FontAttributes" Value="Bold" />
+                                            <Setter Property="TextColor" Value="{StaticResource Primary}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsDone}" Value="False">
+                                            <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <!-- Secondary actions -->
+                <VerticalStackLayout Padding="16,16,16,24" Spacing="10">
+                    <Button Text="🤖  AI health check (beta)" Style="{StaticResource OutlineButton}" Command="{Binding AnalyzeWithAiCommand}" />
+                    <Button Text="Drop this rescue" Style="{StaticResource DangerButton}" IsVisible="{Binding CanDrop}" Command="{Binding DropRescueCommand}" />
+                    <Button Text="Delete report" Style="{StaticResource DangerButton}" IsVisible="{Binding CanDelete}" Command="{Binding DeleteCommand}" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center" />
+
+        <!-- Sticky primary action for volunteers -->
+        <Border Grid.Row="1" BackgroundColor="{StaticResource Surface}" StrokeThickness="0" Padding="16,10,16,16">
+            <Grid>
+                <Button Text="🐾  Accept Rescue" IsVisible="{Binding CanAccept}" Command="{Binding AcceptCommand}" />
+                <Button Text="{Binding NextActionText}" IsVisible="{Binding CanUpdateStatus}" Style="{StaticResource SecondaryButton}"
+                        Command="{Binding AdvanceStatusCommand}" />
+            </Grid>
+        </Border>
+    </Grid>
+</views:BasePage>

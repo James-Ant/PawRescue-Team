@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:PawRescue.Mobile.Views"
+                xmlns:vm="clr-namespace:PawRescue.Mobile.ViewModels"
+                xmlns:m="clr-namespace:PawRescue.Mobile.Models"
+                x:Class="PawRescue.Mobile.Views.AdminDashboardPage"
+                x:DataType="vm:AdminDashboardViewModel"
+                Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Segmented tabs -->
+        <CollectionView Grid.Row="0" ItemsSource="{Binding Tabs}" SelectionMode="Single" SelectedItem="{Binding SelectedTab}"
+                        HeightRequest="52" Margin="12,8,12,0">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="4" HorizontalItemSpacing="6" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <Border Style="{StaticResource Chip}" Padding="2,10">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="Selected">
+                                    <VisualState.Setters>
+                                        <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                        <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                                        <Setter TargetName="TabLabel" Property="Label.TextColor" Value="White" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Label x:Name="TabLabel" Text="{Binding .}" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center" />
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Search (Users / Reports tabs) -->
+        <Border Grid.Row="1" Style="{StaticResource Card}" Padding="4,0" Margin="12,8,12,0">
+            <Border.Triggers>
+                <DataTrigger TargetType="Border" Binding="{Binding IsOverview}" Value="True">
+                    <Setter Property="IsVisible" Value="False" />
+                </DataTrigger>
+                <DataTrigger TargetType="Border" Binding="{Binding IsActivity}" Value="True">
+                    <Setter Property="IsVisible" Value="False" />
+                </DataTrigger>
+            </Border.Triggers>
+            <SearchBar Text="{Binding SearchText}" Placeholder="Search by name, email or keyword" SearchCommand="{Binding SearchCommand}" />
+        </Border>
+
+        <ActivityIndicator Grid.Row="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Start" Margin="0,16" />
+
+        <!-- ===== Overview / statistics ===== -->
+        <ScrollView Grid.Row="2" IsVisible="{Binding IsOverview}">
+            <VerticalStackLayout Padding="12" Spacing="10">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                    <Border Style="{StaticResource StatCard}">
+                        <VerticalStackLayout>
+                            <Label Text="Total reports" Style="{StaticResource Caption}" />
+                            <Label Text="{Binding Stats.TotalReports}" FontSize="26" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource StatCard}">
+                        <VerticalStackLayout>
+                            <Label Text="Open cases" Style="{StaticResource Caption}" />
+                            <Label Text="{Binding Stats.OpenReports}" FontSize="26" FontAttributes="Bold" TextColor="{StaticResource StatusInProgress}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="1" Style="{StaticResource StatCard}">
+                        <VerticalStackLayout>
+                            <Label Text="Rescued" Style="{StaticResource Caption}" />
+                            <Label Text="{Binding Stats.RescuedReports}" FontSize="26" FontAttributes="Bold" TextColor="{StaticResource StatusRescued}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource StatCard}">
+                        <VerticalStackLayout>
+                            <Label Text="Critical &amp; open" Style="{StaticResource Caption}" />
+                            <Label Text="{Binding Stats.CriticalOpenReports}" FontSize="26" FontAttributes="Bold" TextColor="{StaticResource SeverityCritical}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="2" Style="{StaticResource StatCard}">
+                        <VerticalStackLayout>
+                            <Label Text="Users / Volunteers" Style="{StaticResource Caption}" />
+                            <Label FontSize="22" FontAttributes="Bold">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding Stats.TotalUsers}" />
+                                        <Span Text=" / " />
+                                        <Span Text="{Binding Stats.TotalVolunteers}" TextColor="{StaticResource Secondary}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource StatCard}">
+                        <VerticalStackLayout>
+                            <Label Text="Last 7 days" Style="{StaticResource Caption}" />
+                            <Label Text="{Binding Stats.ReportsLast7Days}" FontSize="26" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Reports by status" Style="{StaticResource SectionTitle}" Margin="0" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding StatusBreakdown}" Spacing="6">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="vm:StatusCount">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="{Binding Name}" />
+                                        <Label Grid.Column="1" Text="{Binding Count}" FontAttributes="Bold" />
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Style="{StaticResource Card}" BackgroundColor="{StaticResource SurfaceMuted}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="📊 Analytics heatmap" FontAttributes="Bold" />
+                        <Label Text="Coming in a future version — will show where reports cluster across the city." Style="{StaticResource Caption}" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ===== Users ===== -->
+        <CollectionView Grid.Row="2" IsVisible="{Binding IsUsers}" ItemsSource="{Binding Users}"
+                        SelectionMode="Single" SelectedItem="{Binding SelectedUser}">
+            <CollectionView.Header>
+                <Label Text="Tap a user to change role or activate / deactivate." Style="{StaticResource Caption}" Margin="16,8" />
+            </CollectionView.Header>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="m:UserDto">
+                    <Grid Padding="12,4" Style="{StaticResource NoSelectionHighlight}">
+                        <Border Style="{StaticResource Card}" Padding="12">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout>
+                                    <Label Text="{Binding FullName}" FontAttributes="Bold" />
+                                    <Label Text="{Binding Email}" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="4">
+                                    <Border Style="{StaticResource Badge}" BackgroundColor="{StaticResource Secondary}" HorizontalOptions="End">
+                                        <Label Text="{Binding Role}" Style="{StaticResource BadgeText}" />
+                                    </Border>
+                                    <Label Text="Inactive" TextColor="{StaticResource Danger}" FontSize="11" HorizontalOptions="End"
+                                           IsVisible="{Binding IsActive, Converter={StaticResource InvertedBool}}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- ===== Reports ===== -->
+        <CollectionView Grid.Row="2" IsVisible="{Binding IsReports}" ItemsSource="{Binding Reports}"
+                        ItemTemplate="{StaticResource ReportCardTemplate}"
+                        SelectionMode="Single" SelectedItem="{Binding SelectedReport}" />
+
+        <!-- ===== Activity monitoring ===== -->
+        <CollectionView Grid.Row="2" IsVisible="{Binding IsActivity}" ItemsSource="{Binding Activity}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="m:AuditLogDto">
+                    <Grid Padding="16,8" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <BoxView WidthRequest="4" Color="{StaticResource Primary}" CornerRadius="2" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="{Binding Action}" FontAttributes="Bold" FontSize="13" />
+                            <Label Style="{StaticResource Caption}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding UserName, TargetNullValue='System'}" />
+                                        <Span Text=" • " />
+                                        <Span Text="{Binding CreatedAt, Converter={StaticResource UtcToLocal}}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</views:BasePage>

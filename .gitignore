@@ -1,0 +1,12 @@
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+.idea/
+src/PawRescue.Api/wwwroot/uploads/*
+!src/PawRescue.Api/wwwroot/uploads/.gitkeep
+appsettings.Development.json
+firebase-*.json
+google-services.json

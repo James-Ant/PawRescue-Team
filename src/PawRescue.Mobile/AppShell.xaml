@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:PawRescue.Mobile.Views"
+       x:Class="PawRescue.Mobile.AppShell"
+       Shell.FlyoutBehavior="Disabled"
+       Style="{StaticResource BaseShell}">
+
+    <!-- Entry flow (no tab bar) -->
+    <ShellContent Route="splash" ContentTemplate="{DataTemplate views:SplashPage}" Shell.NavBarIsVisible="False" />
+    <ShellContent Route="login" ContentTemplate="{DataTemplate views:LoginPage}" Shell.NavBarIsVisible="False" />
+
+    <!-- Main app: bottom navigation -->
+    <TabBar Route="main">
+        <Tab Title="Home" Icon="tab_home.png">
+            <ShellContent Route="home" ContentTemplate="{DataTemplate views:HomePage}" />
+        </Tab>
+        <Tab Title="Map" Icon="tab_map.png">
+            <ShellContent Route="map" ContentTemplate="{DataTemplate views:MapPage}" />
+        </Tab>
+        <Tab Title="Report" Icon="tab_report.png">
+            <ShellContent Route="report" ContentTemplate="{DataTemplate views:ReportAnimalPage}" />
+        </Tab>
+        <Tab Title="Alerts" Icon="tab_bell.png">
+            <ShellContent Route="notifications" ContentTemplate="{DataTemplate views:NotificationsPage}" />
+        </Tab>
+        <Tab Title="Profile" Icon="tab_user.png">
+            <ShellContent Route="profile" ContentTemplate="{DataTemplate views:ProfilePage}" />
+        </Tab>
+    </TabBar>
+</Shell>

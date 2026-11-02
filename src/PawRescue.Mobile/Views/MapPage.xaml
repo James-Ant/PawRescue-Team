@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:maps="http://schemas.microsoft.com/dotnet/2021/maui/maps"
+                xmlns:views="clr-namespace:PawRescue.Mobile.Views"
+                xmlns:vm="clr-namespace:PawRescue.Mobile.ViewModels"
+                xmlns:m="clr-namespace:PawRescue.Mobile.Models"
+                x:Class="PawRescue.Mobile.Views.MapPage"
+                x:DataType="vm:MapViewModel"
+                Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <!-- Map fills the screen -->
+        <maps:Map x:Name="RescueMap" ItemsSource="{Binding Pins}" IsShowingUser="True" MapType="Street">
+            <maps:Map.ItemTemplate>
+                <DataTemplate x:DataType="m:MapPinItem">
+                    <maps:Pin Location="{Binding Location}"
+                              Label="{Binding Label}"
+                              Address="{Binding Address}"
+                              Type="Place"
+                              InfoWindowClicked="OnInfoWindowClicked" />
+                </DataTemplate>
+            </maps:Map.ItemTemplate>
+        </maps:Map>
+
+        <!-- Floating search + filters (top) -->
+        <VerticalStackLayout VerticalOptions="Start" Padding="12,16,12,0" Spacing="8">
+            <Border Style="{StaticResource Card}" Padding="4,0">
+                <SearchBar Text="{Binding SearchText}" Placeholder="Search reports, e.g. &quot;puppy&quot;"
+                           SearchCommand="{Binding SearchCommand}" />
+            </Border>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                <Border Style="{StaticResource Chip}" Padding="12,0" HeightRequest="42">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="⚠️" VerticalOptions="Center" />
+                        <Picker Grid.Column="1" ItemsSource="{Binding SeverityFilters}" SelectedItem="{Binding SelectedSeverityFilter}"
+                                Title="Urgency" FontSize="13" />
+                    </Grid>
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource Chip}" Padding="12,0" HeightRequest="42">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="🏷️" VerticalOptions="Center" />
+                        <Picker Grid.Column="1" ItemsSource="{Binding StatusFilters}" SelectedItem="{Binding SelectedStatusFilter}"
+                                Title="Status" FontSize="13" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- Bottom: result count + legend + locate-me -->
+        <Grid VerticalOptions="End" Padding="12,0,12,16" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+            <Border Style="{StaticResource Card}" Padding="12,8">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="{Binding ResultText}" FontAttributes="Bold" FontSize="13" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="● Low" TextColor="{StaticResource SeverityLow}" FontSize="11" />
+                        <Label Text="● Medium" TextColor="{StaticResource SeverityMedium}" FontSize="11" />
+                        <Label Text="● High" TextColor="{StaticResource SeverityHigh}" FontSize="11" />
+                        <Label Text="● Critical" TextColor="{StaticResource SeverityCritical}" FontSize="11" />
+                    </HorizontalStackLayout>
+                    <Label Text="Tap a pin, then its label, to open the report." Style="{StaticResource Caption}" FontSize="11" />
+                </VerticalStackLayout>
+            </Border>
+            <Button Grid.Column="1" Text="◎" FontSize="22" WidthRequest="56" HeightRequest="56" CornerRadius="28"
+                    Padding="0" VerticalOptions="End" Command="{Binding CenterOnMeCommand}" />
+        </Grid>
+    </Grid>
+</views:BasePage>

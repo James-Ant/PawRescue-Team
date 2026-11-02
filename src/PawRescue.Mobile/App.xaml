@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:conv="clr-namespace:PawRescue.Mobile.Converters"
+             x:Class="PawRescue.Mobile.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <!-- Converters must be defined before Templates.xaml uses them -->
+                <ResourceDictionary>
+                    <conv:SeverityToColorConverter x:Key="SeverityToColor" />
+                    <conv:StatusToColorConverter x:Key="StatusToColor" />
+                    <conv:EnumToTextConverter x:Key="EnumToText" />
+                    <conv:InvertedBoolConverter x:Key="InvertedBool" />
+                    <conv:IsNotNullConverter x:Key="IsNotNull" />
+                    <conv:UtcToLocalTextConverter x:Key="UtcToLocal" />
+                    <conv:CountToBoolConverter x:Key="CountToBool" />
+                    <conv:BoolToColorConverter x:Key="DoneToColor" TrueColor="#F97316" FalseColor="#E7DDD3" />
+                    <conv:BoolToColorConverter x:Key="ReadToBackground" TrueColor="#FFFFFF" FalseColor="#FFF1E6" />
+                </ResourceDictionary>
+                <ResourceDictionary Source="Resources/Styles/Templates.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

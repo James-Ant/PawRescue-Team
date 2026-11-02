@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:PawRescue.Mobile.Views"
+                xmlns:vm="clr-namespace:PawRescue.Mobile.ViewModels"
+                xmlns:m="clr-namespace:PawRescue.Mobile.Models"
+                x:Class="PawRescue.Mobile.Views.ReportAnimalPage"
+                x:Name="Root"
+                x:DataType="vm:ReportAnimalViewModel"
+                Title="{Binding Title}">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView>
+            <VerticalStackLayout Padding="16,8,16,24" Spacing="6">
+
+                <!-- 1. Photos -->
+                <Label Text="Photos of the animal" Style="{StaticResource SectionTitle}" />
+                <Label Text="Clear photos help rescuers find and assess the animal (max 5)." Style="{StaticResource Caption}" />
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,8,0,0" IsVisible="{Binding CanAddMorePhotos}">
+                    <Border Style="{StaticResource Card}" Padding="0" HeightRequest="96" Stroke="{StaticResource Primary}"
+                            StrokeDashArray="4,3" BackgroundColor="{StaticResource PrimaryLight}">
+                        <VerticalStackLayout VerticalOptions="Center" Spacing="2">
+                            <Label Text="📷" FontSize="28" HorizontalOptions="Center" />
+                            <Label Text="Take Photo" FontAttributes="Bold" TextColor="{StaticResource Primary}" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TakePhotoCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource Card}" Padding="0" HeightRequest="96">
+                        <VerticalStackLayout VerticalOptions="Center" Spacing="2">
+                            <Label Text="🖼️" FontSize="28" HorizontalOptions="Center" />
+                            <Label Text="Upload" FontAttributes="Bold" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding PickPhotoCommand}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </Grid>
+
+                <CollectionView ItemsSource="{Binding Photos}" HeightRequest="110" IsVisible="{Binding HasPhotos}" Margin="0,8,0,0">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="m:PhotoItem">
+                            <Grid WidthRequest="104" HeightRequest="104">
+                                <Border StrokeThickness="0" StrokeShape="RoundRectangle 14">
+                                    <Image Source="{Binding Preview}" Aspect="AspectFill" />
+                                </Border>
+                                <Border BackgroundColor="#CC000000" StrokeShape="RoundRectangle 12" StrokeThickness="0"
+                                        WidthRequest="24" HeightRequest="24" HorizontalOptions="End" VerticalOptions="Start" Margin="4">
+                                    <Label Text="✕" TextColor="White" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding BindingContext.RemovePhotoCommand, Source={x:Reference Root}}"
+                                                              CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- 2. Details -->
+                <Label Text="Details" Style="{StaticResource SectionTitle}" Margin="0,16,0,0" />
+
+                <Label Text="Short title" Style="{StaticResource FieldLabel}" />
+                <Border Style="{StaticResource InputBorder}">
+                    <Entry Text="{Binding ReportTitle}" Placeholder="e.g. Injured puppy near the market" MaxLength="120" />
+                </Border>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <VerticalStackLayout>
+                        <Label Text="Animal" Style="{StaticResource FieldLabel}" />
+                        <Border Style="{StaticResource InputBorder}">
+                            <Picker ItemsSource="{Binding AnimalTypes}" SelectedItem="{Binding SelectedAnimalType}" Title="Select" />
+                        </Border>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Condition" Style="{StaticResource FieldLabel}" />
+                        <Border Style="{StaticResource InputBorder}">
+                            <Picker ItemsSource="{Binding Conditions}" SelectedItem="{Binding SelectedCondition}" Title="Select" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Severity chips -->
+                <Label Text="How urgent is it?" Style="{StaticResource FieldLabel}" />
+                <CollectionView ItemsSource="{Binding Severities}" SelectionMode="Single"
+                                SelectedItem="{Binding SelectedSeverity}" HeightRequest="48">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="4" HorizontalItemSpacing="6" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="m:SeverityLevel">
+                            <Border Style="{StaticResource Chip}" Padding="4,10">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                                <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                                                <Setter TargetName="ChipLabel" Property="Label.TextColor" Value="White" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Label x:Name="ChipLabel" Text="{Binding .}" FontSize="13" FontAttributes="Bold" HorizontalOptions="Center"
+                                       TextColor="{Binding ., Converter={StaticResource SeverityToColor}}" />
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Label Text="Notes about the animal's condition" Style="{StaticResource FieldLabel}" />
+                <Border Style="{StaticResource InputBorder}" Padding="10,4">
+                    <Editor Text="{Binding Description}" Placeholder="Describe injuries, behavior, landmarks…" HeightRequest="110" MaxLength="2000" />
+                </Border>
+
+                <!-- 3. Location -->
+                <Label Text="Location" Style="{StaticResource SectionTitle}" Margin="0,16,0,0" />
+                <Border Style="{StaticResource Card}">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <Border BackgroundColor="{StaticResource SecondaryLight}" StrokeThickness="0" StrokeShape="RoundRectangle 12"
+                                WidthRequest="44" HeightRequest="44">
+                            <Label Text="📍" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                            <Label Text="GPS location" FontAttributes="Bold" />
+                            <Label Text="{Binding LocationStatus}" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                        <Label Grid.Column="2" Text="Refresh" Style="{StaticResource LinkLabel}" VerticalOptions="Center" />
+                    </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding DetectLocationCommand}" />
+                    </Border.GestureRecognizers>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Sticky submit button -->
+        <Border Grid.Row="1" BackgroundColor="{StaticResource Surface}" StrokeThickness="0" Padding="16,10,16,16">
+            <Grid>
+                <Button Text="Submit Report" Command="{Binding SubmitCommand}" IsEnabled="{Binding IsNotBusy}" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="White"
+                                   HorizontalOptions="End" Margin="0,0,16,0" />
+            </Grid>
+        </Border>
+    </Grid>
+</views:BasePage>

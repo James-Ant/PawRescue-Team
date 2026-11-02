@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Reusable list-item templates (the "report card" appears on Home, Volunteer, Profile and Admin). -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:m="clr-namespace:PawRescue.Mobile.Models">
+
+    <DataTemplate x:Key="ReportCardTemplate" x:DataType="m:ReportSummaryDto">
+        <Grid Padding="16,6" Style="{StaticResource NoSelectionHighlight}">
+            <Border Style="{StaticResource Card}" Padding="10">
+                <Grid ColumnDefinitions="88,*" ColumnSpacing="12">
+                    <!-- Thumbnail -->
+                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 14" HeightRequest="88" WidthRequest="88"
+                            BackgroundColor="{StaticResource SurfaceMuted}">
+                        <Grid>
+                            <Label Text="{Binding AnimalEmoji}" FontSize="34" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Image Source="{Binding ThumbnailUrl}" Aspect="AspectFill" />
+                        </Grid>
+                    </Border>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                        <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="15" MaxLines="1" LineBreakMode="TailTruncation" />
+                        <Label Text="{Binding Address}" Style="{StaticResource Caption}" MaxLines="1" LineBreakMode="TailTruncation" />
+                        <HorizontalStackLayout Spacing="6">
+                            <Border Style="{StaticResource Badge}" BackgroundColor="{Binding Severity, Converter={StaticResource SeverityToColor}}">
+                                <Label Text="{Binding Severity}" Style="{StaticResource BadgeText}" />
+                            </Border>
+                            <Border Style="{StaticResource Badge}" BackgroundColor="{Binding Status, Converter={StaticResource StatusToColor}}">
+                                <Label Text="{Binding Status, Converter={StaticResource EnumToText}}" Style="{StaticResource BadgeText}" />
+                            </Border>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="10">
+                            <Label Text="{Binding DistanceText}" Style="{StaticResource Caption}" TextColor="{StaticResource Primary}"
+                                   IsVisible="{Binding DistanceText, Converter={StaticResource IsNotNull}}" />
+                            <Label Text="{Binding CreatedAt, Converter={StaticResource UtcToLocal}}" Style="{StaticResource Caption}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+        </Grid>
+    </DataTemplate>
+
+    <!-- Selected item shouldn't turn grey on Android -->
+    <Style x:Key="NoSelectionHighlight" TargetType="Grid">
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Selected">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="Transparent" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+</ResourceDictionary>

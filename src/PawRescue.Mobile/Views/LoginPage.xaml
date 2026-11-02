@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:PawRescue.Mobile.Views"
+                xmlns:vm="clr-namespace:PawRescue.Mobile.ViewModels"
+                x:Class="PawRescue.Mobile.Views.LoginPage"
+                x:DataType="vm:LoginViewModel">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,48,24,24" Spacing="14">
+
+            <!-- Header -->
+            <Image Source="paw_logo.png" WidthRequest="84" HeightRequest="84" HorizontalOptions="Center" />
+            <Label Text="{Binding Title}" Style="{StaticResource Headline}" HorizontalOptions="Center" Margin="0,8,0,0" />
+            <Label Text="Log in to help animals near you" Style="{StaticResource Caption}" HorizontalOptions="Center" Margin="0,0,0,16" />
+
+            <!-- Email -->
+            <Label Text="Email" Style="{StaticResource FieldLabel}" />
+            <Border Style="{StaticResource InputBorder}">
+                <Entry Text="{Binding Email}" Placeholder="you@example.com" Keyboard="Email" ReturnType="Next" />
+            </Border>
+
+            <!-- Password -->
+            <Label Text="Password" Style="{StaticResource FieldLabel}" />
+            <Border Style="{StaticResource InputBorder}">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Entry Text="{Binding Password}" Placeholder="••••••••" IsPassword="{Binding IsPasswordHidden}"
+                           ReturnType="Go" ReturnCommand="{Binding LoginCommand}" />
+                    <Label Grid.Column="1" Text="👁" FontSize="18" VerticalOptions="Center" Padding="8,0,0,0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TogglePasswordCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
+            </Border>
+
+            <Label Text="Forgot password?" Style="{StaticResource LinkLabel}" HorizontalOptions="End">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoToForgotPasswordCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Button Text="Log In" Command="{Binding LoginCommand}" IsEnabled="{Binding IsNotBusy}" Margin="0,12,0,0" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="4" Margin="0,16,0,0">
+                <Label Text="New to Paw Rescue?" Style="{StaticResource Caption}" />
+                <Label Text="Create an account" Style="{StaticResource LinkLabel}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToRegisterCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BasePage>

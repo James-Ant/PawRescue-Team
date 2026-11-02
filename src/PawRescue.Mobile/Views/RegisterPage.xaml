@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:PawRescue.Mobile.Views"
+                xmlns:vm="clr-namespace:PawRescue.Mobile.ViewModels"
+                x:Class="PawRescue.Mobile.Views.RegisterPage"
+                x:DataType="vm:RegisterViewModel"
+                Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,8,24,32" Spacing="6">
+            <Label Text="Join the rescue network" Style="{StaticResource Headline}" FontSize="24" />
+            <Label Text="Report animals in need or volunteer to rescue them." Style="{StaticResource Caption}" Margin="0,0,0,10" />
+
+            <Label Text="Full name" Style="{StaticResource FieldLabel}" />
+            <Border Style="{StaticResource InputBorder}">
+                <Entry Text="{Binding FullName}" Placeholder="Juan Dela Cruz" Keyboard="Text" />
+            </Border>
+
+            <Label Text="Email" Style="{StaticResource FieldLabel}" />
+            <Border Style="{StaticResource InputBorder}">
+                <Entry Text="{Binding Email}" Placeholder="you@example.com" Keyboard="Email" />
+            </Border>
+
+            <Label Text="Mobile number (optional)" Style="{StaticResource FieldLabel}" />
+            <Border Style="{StaticResource InputBorder}">
+                <Entry Text="{Binding PhoneNumber}" Placeholder="09XX XXX XXXX" Keyboard="Telephone" />
+            </Border>
+
+            <Label Text="Password" Style="{StaticResource FieldLabel}" />
+            <Border Style="{StaticResource InputBorder}">
+                <Entry Text="{Binding Password}" Placeholder="At least 8 characters" IsPassword="True" />
+            </Border>
+
+            <Label Text="Confirm password" Style="{StaticResource FieldLabel}" />
+            <Border Style="{StaticResource InputBorder}">
+                <Entry Text="{Binding ConfirmPassword}" Placeholder="Re-enter password" IsPassword="True" />
+            </Border>
+
+            <!-- Role choice -->
+            <Border Style="{StaticResource Card}" Margin="0,14,0,0">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <VerticalStackLayout>
+                        <Label Text="I want to volunteer" FontAttributes="Bold" />
+                        <Label Text="Volunteers can accept rescue cases near them." Style="{StaticResource Caption}" />
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1" IsToggled="{Binding RegisterAsVolunteer}" OnColor="{StaticResource Primary}"
+                            ThumbColor="White" VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <HorizontalStackLayout Spacing="6" Margin="0,10,0,0">
+                <CheckBox IsChecked="{Binding AcceptedTerms}" Color="{StaticResource Primary}" />
+                <Label Text="I agree to the Terms and Privacy Policy" VerticalOptions="Center" Style="{StaticResource Caption}" />
+            </HorizontalStackLayout>
+
+            <Button Text="Create Account" Command="{Binding RegisterCommand}" IsEnabled="{Binding IsNotBusy}" Margin="0,12,0,0" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="4" Margin="0,12,0,0">
+                <Label Text="Already have an account?" Style="{StaticResource Caption}" />
+                <Label Text="Log in" Style="{StaticResource LinkLabel}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</views:BasePage>

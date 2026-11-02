@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:views="clr-namespace:PawRescue.Mobile.Views"
+                xmlns:vm="clr-namespace:PawRescue.Mobile.ViewModels"
+                x:Class="PawRescue.Mobile.Views.ProfilePage"
+                x:DataType="vm:ProfileViewModel"
+                Shell.NavBarIsVisible="False">
+
+    <CollectionView ItemsSource="{Binding History}"
+                    ItemTemplate="{StaticResource ReportCardTemplate}"
+                    SelectionMode="Single"
+                    SelectedItem="{Binding SelectedReport}">
+        <CollectionView.Header>
+            <VerticalStackLayout Spacing="12">
+
+                <!-- Header band -->
+                <Grid HeightRequest="190" BackgroundColor="{StaticResource Primary}" Padding="16,24,16,0">
+                    <VerticalStackLayout HorizontalOptions="Center" Spacing="6">
+                        <Border WidthRequest="84" HeightRequest="84" StrokeShape="RoundRectangle 42" BackgroundColor="White" StrokeThickness="0">
+                            <Label Text="{Binding Initials}" FontSize="30" FontAttributes="Bold" TextColor="{StaticResource Primary}"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <Label Text="{Binding Profile.User.FullName}" TextColor="White" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" />
+                        <Border BackgroundColor="#33FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 10" Padding="10,3" HorizontalOptions="Center">
+                            <Label Text="{Binding Profile.User.Role}" TextColor="White" FontSize="12" FontAttributes="Bold" />
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Contribution stats -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" Margin="16,-36,16,0">
+                    <Border Style="{StaticResource StatCard}">
+                        <VerticalStackLayout HorizontalOptions="Center">
+                            <Label Text="{Binding Profile.Stats.ReportsSubmitted}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center" />
+                            <Label Text="Reports" Style="{StaticResource Caption}" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource StatCard}">
+                        <VerticalStackLayout HorizontalOptions="Center">
+                            <Label Text="{Binding Profile.Stats.ReportsRescued}" FontSize="22" FontAttributes="Bold"
+                                   TextColor="{StaticResource StatusRescued}" HorizontalOptions="Center" />
+                            <Label Text="Saved" Style="{StaticResource Caption}" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource StatCard}">
+                        <VerticalStackLayout HorizontalOptions="Center">
+                            <Label Text="{Binding Profile.Stats.RescuesCompleted}" FontSize="22" FontAttributes="Bold"
+                                   TextColor="{StaticResource Secondary}" HorizontalOptions="Center" />
+                            <Label Text="Rescues" Style="{StaticResource Caption}" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Account settings -->
+                <Border Style="{StaticResource Card}" Margin="16,0">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Account settings" Style="{StaticResource SectionTitle}" Margin="0" />
+                            <Label Grid.Column="1" Text="Edit" Style="{StaticResource LinkLabel}" VerticalOptions="Center"
+                                   IsVisible="{Binding IsEditing, Converter={StaticResource InvertedBool}}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding StartEditCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Grid>
+
+                        <!-- Read mode -->
+                        <VerticalStackLayout Spacing="6" IsVisible="{Binding IsEditing, Converter={StaticResource InvertedBool}}">
+                            <Label Text="{Binding Profile.User.Email, StringFormat='✉️  {0}'}" />
+                            <Label Text="{Binding Profile.User.PhoneNumber, StringFormat='📱  {0}', TargetNullValue='📱  No phone number'}" />
+                            <Label Text="{Binding Profile.User.CreatedAt, Converter={StaticResource UtcToLocal}, ConverterParameter='MMMM yyyy', StringFormat='🗓️  Member since {0}'}" />
+                        </VerticalStackLayout>
+
+                        <!-- Edit mode -->
+                        <VerticalStackLayout Spacing="6" IsVisible="{Binding IsEditing}">
+                            <Label Text="Full name" Style="{StaticResource FieldLabel}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding EditFullName}" />
+                            </Border>
+                            <Label Text="Mobile number" Style="{StaticResource FieldLabel}" />
+                            <Border Style="{StaticResource InputBorder}">
+                                <Entry Text="{Binding EditPhone}" Keyboard="Telephone" />
+                            </Border>
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,8,0,0">
+                                <Button Text="Cancel" Style="{StaticResource OutlineButton}" Command="{Binding CancelEditCommand}" />
+                                <Button Grid.Column="1" Text="Save" Command="{Binding SaveCommand}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <VerticalStackLayout Padding="16,0" Spacing="10">
+                    <Button Text="🦺  Volunteer Dashboard" Style="{StaticResource SecondaryButton}"
+                            IsVisible="{Binding IsVolunteer}" Command="{Binding OpenVolunteerDashboardCommand}" />
+                    <Button Text="🛠️  Admin Dashboard" Style="{StaticResource OutlineButton}"
+                            IsVisible="{Binding IsAdmin}" Command="{Binding OpenAdminDashboardCommand}" />
+                    <Button Text="Log out" Style="{StaticResource DangerButton}" Command="{Binding LogoutCommand}" />
+                </VerticalStackLayout>
+
+                <Label Text="My report history" Style="{StaticResource SectionTitle}" Margin="16,8,16,0" />
+            </VerticalStackLayout>
+        </CollectionView.Header>
+
+        <CollectionView.EmptyView>
+            <Label Text="You haven't reported any animals yet." Style="{StaticResource Caption}" HorizontalOptions="Center" Margin="24" />
+        </CollectionView.EmptyView>
+        <CollectionView.Footer>
+            <BoxView HeightRequest="24" Color="Transparent" />
+        </CollectionView.Footer>
+    </CollectionView>
+</views:BasePage>
