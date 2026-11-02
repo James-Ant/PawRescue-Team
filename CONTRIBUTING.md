@@ -4,19 +4,10 @@
 
 | Member | Feature | Layers you'll touch |
 |---|---|---|
-| **Member 1** | Forgot password / reset password | Application service, mobile ViewModel |
-| **Member 2** | Notifications screen (list, unread count, mark as read) | Repository (EF Core query), service, mobile ViewModel |
-| **Member 3** | Map filters + marker clustering | Repository (EF Core filters), mobile service + ViewModel |
-| **Member 4** | Admin user management + activity log | Service, repository, mobile ViewModel |
-
-Write your name next to your number here so it is in the repo history:
-
-- Member 1: ______________________
-- Member 2: ______________________
-- Member 3: ______________________
-- Member 4: ______________________
-
----
+| **Jona** | Forgot password / reset password | Application service, mobile ViewModel |
+| **Moyo** | Notifications screen (list, unread count, mark as read) | Repository (EF Core query), service, mobile ViewModel |
+| **Montalban** | Map filters + marker clustering | Repository (EF Core filters), mobile service + ViewModel |
+| **Camposano** | Admin user management + activity log | Service, repository, mobile ViewModel |
 
 ### Member 1 — Forgot / Reset Password
 
