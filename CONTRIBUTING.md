@@ -9,7 +9,7 @@
 | **Montalban** | Map filters + marker clustering | Repository (EF Core filters), mobile service + ViewModel |
 | **Camposano** | Admin user management + activity log | Service, repository, mobile ViewModel |
 
-### Member 1 — Forgot / Reset Password
+### Jona — Forgot / Reset Password
 
 **Files**
 - `src/PawRescue.Application/Services/AuthService.cs` → `ForgotPasswordAsync`, `ResetPasswordAsync`
@@ -26,7 +26,7 @@
 
 ---
 
-### Member 2 — Notifications
+### Moyo — Notifications
 
 **Files**
 - `src/PawRescue.Infrastructure/Repositories/Repositories.cs` → `NotificationRepository` (3 methods)
@@ -45,7 +45,7 @@
 
 ---
 
-### Member 3 — Map Filters + Marker Clustering
+### Montalban — Map Filters + Marker Clustering
 
 **Files**
 - `src/PawRescue.Infrastructure/Repositories/Repositories.cs` → `ReportRepository.GetInBoundingBoxAsync` and `SearchAsync` (the filter lines)
@@ -63,7 +63,7 @@
 
 ---
 
-### Member 4 — Admin User Management + Activity Log
+### Camposano — Admin User Management + Activity Log
 
 **Files**
 - `src/PawRescue.Application/Services/AdminService.cs` → `ChangeRoleAsync`, `SetActiveAsync`, `GetActivityAsync`
@@ -81,23 +81,6 @@
 
 ---
 
-## 2. One-time setup
-
-### Team leader (do this once)
-1. Create a **private GitHub repository** named `paw-rescue`.
-2. Unzip the project, then in the `PawRescue` folder:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial Paw Rescue project with team TODOs"
-   git branch -M main
-   git remote add origin https://github.com/<leader-username>/paw-rescue.git
-   git push -u origin main
-   ```
-3. GitHub → **Settings → Collaborators** → invite all 4 members.
-4. **Settings → Branches → Add rule** for `main`: tick **"Require a pull request before merging"** and **"Require approvals (1)"**. Now nobody can push straight to `main`, so every change is a reviewed PR with the author's name on it.
-5. Create 4 **Issues** (one per member, copy the "Done when" checklist into each) and assign each to its owner.
-
 ### Every member
 1. Accept the GitHub invite.
 2. Set your identity. **Use the same email as your GitHub account**, or your commits won't count as yours:
@@ -113,7 +96,7 @@
 
 ---
 
-## 3. Daily workflow (every member)
+Daily workflow (every member)
 
 ```bash
 # 1. Start from the latest main
