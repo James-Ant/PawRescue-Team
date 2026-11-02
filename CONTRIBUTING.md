@@ -139,7 +139,7 @@ dotnet test tests/PawRescue.Tests
 
 ---
 
-## 4. Avoiding conflicts
+. Avoiding conflicts
 
 Members 2, 3 and 4 all edit `Repositories.cs`, and Members 2 and 4 both edit `DashboardViewModels.cs`. Each person edits **different classes** inside those files, so Git usually merges them automatically. If you do get a conflict:
 
@@ -150,13 +150,3 @@ Members 2, 3 and 4 all edit `Repositories.cs`, and Members 2 and 4 both edit `Da
 Don't reformat whole files (no "Format Document" on files you didn't change). That causes conflicts for everyone else.
 
 ---
-
-## 5. How to show who did what (for the panel/adviser)
-- **GitHub → Insights → Contributors**: commits and lines changed per member.
-- **Pull requests tab**: each member's PR, reviews and comments.
-- **Issues tab**: each feature assigned to and closed by its owner.
-- `git log --author="Your Name" --oneline` lists your commits.
-- Keep the filled-in names in section 1 of this file.
-
----
-
